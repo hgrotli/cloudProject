@@ -1,0 +1,27 @@
+[
+  {
+    "birthday": "1963-09-21",
+    "version": "3.0",
+    "name": "Stenerson;Derik",
+    "first name": "Derik Stenerson",
+    "organisation": "Microsoft Corporation",
+    "address": ";;One Microsoft Way;Redmond;WA;98052-6399;USA",
+    "telefon": "+1-425-936-7329",
+    "email": "deriks@Microsoft.com"
+  },
+  {
+    "version": "3.0",
+    "name": "Ganguly;Anik",
+    "first name": "Anik Ganguly",
+    "organisation": " Open Text Inc.",
+    "address": ";Suite 101;38777 West Six Mile Road;Livonia;MI;48152;USA",
+    "telefon": "+1-734-542-5955",
+    "email": "ganguly@acm.org"
+  },
+  {
+    "version": "3.0",
+    "name": "Moskowitz;Robert",
+    "first name": "Robert Moskowitz",
+    "email": "rgm-ietf@htt-consult.com"
+  }
+]
