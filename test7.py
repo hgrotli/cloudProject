@@ -13,7 +13,7 @@ try:
     mycol = mydb["Contacts"]
 
     # Define document to be inserted
-    mydoc = {"name": "Johnny", "address": "Highway 38"}
+    mydoc = {"name": "Johnnybot", "address": "Highway 39"}
 
     # Insert document into collection
     x = mycol.insert_one(mydoc)
