@@ -7,14 +7,20 @@ import pymongo
 print("hei")
 # print(json_text)
 
-MONGO_URI = ' mongodb+srv://vegardstamadsen:zvNcYlvVwuE1ScJv@cluster0.bomsogj.mongodb.net/?retryWrites=true&w=majority'
-client = pymongo.MongoClient(MONGO_URI)
-database = client['test']
+
+
+myclient = pymongo.MongoClient("mongodb+srv://vegardstamadsen:zvNcYlvVwuE1ScJv@cluster0.bomsogj.mongodb.net/?retryWrites=true&w=majority")
+mydb = myclient["mydatabase"]
+
+mycol = mydb["customers"]
+
+
+
+
+
 
 
 '''
-
-
 mongodb+srv://vegardstamadsen:zvNcYlvVwuE1ScJv@cluster0.bomsogj.mongodb.net/?retryWrites=true&w=majority
 '''
 
