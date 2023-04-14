@@ -7,6 +7,7 @@ import pymongo
 import certifi
 from bson import json_util
 from parseVcard import INPUT_NAME, json_text
+from bson import json_util
 
 
 print(INPUT_NAME)
@@ -82,15 +83,14 @@ def hello():
 
 @app.route('/contacts')
 def get_contacts():
-    
+    contacts = []
     for contact in mycol.find():
-        contactsMy.append({
-            'id': str(contact['_id']),
-            'name': contact['name'],
-            
-        })
-    return {'contacts': contactsMy}  
-
+        # convert the MongoDB document to a JSON-serializable format
+        contact = json.loads(json_util.dumps(contact))
+        contacts.append(contact)
+    return jsonify(contacts)
+    
+    
 
 @app.route('/contacts/<id>')
 def get_contact(id):
@@ -99,8 +99,9 @@ def get_contact(id):
 @app.route('/data')
 def get_data():
     for d in contactsDATA:
-        data = json.dumps(d) 
-        mycol.insert_one(json.loads(data))
+        
+        json_data = json_util.dumps(d)
+        mycol.insert_one(json.loads(json_data))
     return contactsDATA
     
 
