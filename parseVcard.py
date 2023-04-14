@@ -42,7 +42,7 @@ def fix_key(key):
 
 
 # Make dicts
-contacts = []
+contactsDATA = []
 for contact_text in contact_texts:
     # Create new, empty contact, and split the text into lines.
     contact = {}
@@ -63,15 +63,15 @@ for contact_text in contact_texts:
 
         # Add key-value-pair to the contact dictionary, and add to contact list.
         contact[key] = value
-    contacts.append(contact)
+    contactsDATA.append(contact)
 
 
 # Create JSON
-json_text = json.dumps(contacts, indent=2)
+json_text = json.dumps(contactsDATA, indent=2)
 
 
 # Write JSON to file
 with open(OUTPUT_NAME, 'w') as f:
-    f.write(json_text)
+    
     print(json_text)
-    print(contacts)
+    

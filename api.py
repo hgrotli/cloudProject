@@ -1,18 +1,52 @@
 from flask import Flask, request
-from parseVcard import contacts
+from flask import jsonify
+from parseVcard import contactsDATA
 import json
 from pymongo import MongoClient
 import pymongo
+import certifi
+from bson import json_util
+from parseVcard import INPUT_NAME, json_text
 
+
+print(INPUT_NAME)
+print(json_text)
 print("hei")
 # print(json_text)
 
 
 
-myclient = pymongo.MongoClient("mongodb+srv://vegardstamadsen:zvNcYlvVwuE1ScJv@cluster0.bomsogj.mongodb.net/?retryWrites=true&w=majority")
-mydb = myclient["mydatabase"]
 
-mycol = mydb["customers"]
+
+
+
+#mongodb+srv://vegardstamadsen:zvNcYlvVwuE1ScJv@cluster0.bomsogj.mongodb.net/test
+try:
+    # Connect to MongoDB
+    client = pymongo.MongoClient("mongodb+srv://vegardstamadsen:zvNcYlvVwuE1ScJv@cluster0.bomsogj.mongodb.net/test", tlsCAFile=certifi.where())
+    print("Connected to MongoDB")
+
+    # Select database
+    mydb = client["CloudContacts"]
+
+    # Select collection
+    mycol = mydb["Contacts"]
+
+    # Define document to be inserted
+   # mydoc = {"name": "Johnnybot", "address": "Highway 39"}
+
+    # Insert document into collection
+   # x = mycol.insert_one(mydoc)
+
+    # Print the ObjectID of the inserted document
+   # print(x.inserted_id)
+  
+
+except Exception as e:
+    print(f"Could not connect to MongoDB: {e}")
+
+
+
 
 
 
@@ -29,39 +63,62 @@ app = Flask("Api")
 
 
 # Simulated database
-CONTACTS =[{"name": "Paul", "address": "road_66", "telefon": "1234"}, {"name": "Mary"}, {"name": "John"}]
+CONTACTS =[]
+contactsMy = []
+sampledata = json_text
 
+# Load the JSON data from file
 
 
 
 @app.route('/')
 def hello():
-    return 'Hello! hei!!'
+    
+    return 'Velkommen til vår API'
+    
+    
 
 
 
 @app.route('/contacts')
 def get_contacts():
-    return CONTACTS
+    
+    for contact in mycol.find():
+        contactsMy.append({
+            'id': str(contact['_id']),
+            'name': contact['name'],
+            'address': contact['address']
+        })
+    return {'contacts': contactsMy}  
 
 
 @app.route('/contacts/<id>')
 def get_contact(id):
     return CONTACTS[int(id)]
 
+@app.route('/data')
+def get_data():
+    for d in contactsDATA:
+        data = json.dumps(d) 
+        mycol.insert_one(json.loads(data))
+    return contactsDATA
+    
+
 
 @app.route('/contacts', methods=['POST'])
-def update_contact():
+def create_contact():
+    # get the contact data from the request body
     name = request.json['name']
     address = request.json['address']
-    contact = {"name": name, "address": address}
-    
-    CONTACTS.append(contact)
-    CONTACTS.append(address)
-    
 
-    id = len(CONTACTS) - 1
-    return {'id': id}
+    # create a new contact object
+    contact = {'name': name, 'address': address}
+
+    # insert the contact object into the MongoDB collection
+    result = mycol.insert_one(contact)
+
+    # return the ID of the newly inserted contact
+    return {'id': str(result.inserted_id)}
 
 
 @app.route('/contacts/<id>', methods=['DELETE'])
