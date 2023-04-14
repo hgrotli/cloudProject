@@ -94,14 +94,14 @@ def get_contacts():
 
 @app.route('/contacts/<id>')
 def get_contact(id):
-    return CONTACTS[int(id)]
+    return contactsMy[int(id)]
 
 @app.route('/data')
 def get_data():
     for d in contactsDATA:
         data = json.dumps(d) 
         mycol.insert_one(json.loads(data))
-        return d
+    return contactsDATA
     
 
 
