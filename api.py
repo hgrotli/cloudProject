@@ -101,7 +101,7 @@ def get_data():
     for d in contactsDATA:
         data = json.dumps(d) 
         mycol.insert_one(json.loads(data))
-    return contactsDATA
+        return d
     
 
 
