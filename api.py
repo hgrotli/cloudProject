@@ -87,7 +87,7 @@ def get_contacts():
         contactsMy.append({
             'id': str(contact['_id']),
             'name': contact['name'],
-            'address': contact['address']
+            
         })
     return {'contacts': contactsMy}  
 
