@@ -21,7 +21,6 @@ END:VCARD
 BEGIN:VCARD
 VERSION:3.0
 N:Moskowitz;Robert
-ADR;TYPE=WORK,POSTAL,PARCEL:;;One Microsoft Way;Beryy Street;WA;98052-6100;USA
 FN:Robert Moskowitz
 EMAIL;TYPE=INTERNET:rgm-ietf@htt-consult.com
 END:VCARD

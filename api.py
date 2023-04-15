@@ -1,17 +1,16 @@
-from flask import Flask, request
+from flask import Flask, request, render_template
 from flask import jsonify
-from parseVcard import contactsDATA
+import vobject
 import json
 from pymongo import MongoClient
 import pymongo
 import certifi
 from bson import json_util
-from parseVcard import INPUT_NAME, json_text
+
 from bson import json_util
 
 
-print(INPUT_NAME)
-print(json_text)
+
 print("hei")
 # print(json_text)
 
@@ -66,7 +65,8 @@ app = Flask("Api")
 # Simulated database
 CONTACTS =[]
 contactsMy = []
-sampledata = json_text
+
+
 contacts = []
 
 # Load the JSON data from file
@@ -81,7 +81,7 @@ def hello():
     
 
 
-
+'''
 @app.route('/contacts')
 def get_contacts():
     
@@ -90,21 +90,103 @@ def get_contacts():
         contact = json.loads(json_util.dumps(contact))
         contacts.append(contact)
     return jsonify(contacts)
-    
+'''   
+
+# Settings
+MyData = []
+
+@app.route('/upload', methods=['GET', 'POST'])
+def upload():
     
 
-@app.route('/contacts/<id>')
-def get_contact(id):
-    return contacts[int(id)]
+    
+   
+    if request.method == 'POST':
+        file = request.files['file']
+        file_content = file.read().decode('utf-8')
+        text = vobject.readComponents(file_content)
 
+
+        
+        for dataContact in text:
+            
+            phone = "--No Information--"
+            try:
+                phone = str(dataContact.tel.value)
+            except AttributeError:
+                pass
+            
+            address = "--No Information--"
+            try:
+                address = str(dataContact.adr.value)
+            except AttributeError:
+                pass
+
+            company = "--No Information--"
+            try:
+                company = str(dataContact.org.value[0])
+            except AttributeError:
+                pass
+
+
+            MyContact = {
+                'email': dataContact.email.value,
+                'name': str(dataContact.n.value),
+                'fullname': dataContact.fn.value,
+                'address': address,
+                'company': company,
+                'phone': phone,
+ 
+            }
+
+            
+            result = mycol.insert_one(MyContact)
+            MyData.append(str(result.inserted_id))
+
+        return jsonify({'message': MyData}) 
+        
+    else:
+        # show the upload form
+        return render_template('upload.html')
+        
+    
+@app.route('/contacts')
+def get_contacts():
+    # clear the contacts list
+    contacts = []
+
+    # retrieve all contacts from the MongoDB collection
+    for contact in mycol.find():
+        # convert the MongoDB document to a JSON-serializable format
+        contact = json.loads(json_util.dumps(contact))
+        contacts.append(contact)
+
+    # return the contacts as a JSON response
+    return jsonify(contacts)
+
+@app.route('/contacts/<email>')
+def get_contact(email):
+    # retrieve the contact from the MongoDB collection using the email address
+    contact = mycol.find_one({'email': email})
+
+    if contact is not None:
+        # convert the MongoDB document to a JSON-serializable format
+        contact = json.loads(json_util.dumps(contact))
+        return jsonify(contact)
+    else:
+        return f"Contact with email {email} does not exist"
+
+
+'''
 @app.route('/data')
 def get_data():
     for d in contactsDATA:
         
         json_data = json_util.dumps(d)
         mycol.insert_one(json.loads(json_data))
+        
     return contactsDATA
-    
+'''    
 
 
 @app.route('/contacts', methods=['POST'])
