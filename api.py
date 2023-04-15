@@ -67,6 +67,7 @@ app = Flask("Api")
 CONTACTS =[]
 contactsMy = []
 sampledata = json_text
+contacts = []
 
 # Load the JSON data from file
 
@@ -83,7 +84,7 @@ def hello():
 
 @app.route('/contacts')
 def get_contacts():
-    contacts = []
+    
     for contact in mycol.find():
         # convert the MongoDB document to a JSON-serializable format
         contact = json.loads(json_util.dumps(contact))
@@ -94,7 +95,7 @@ def get_contacts():
 
 @app.route('/contacts/<id>')
 def get_contact(id):
-    return contactsMy[int(id)]
+    return contacts[int(id)]
 
 @app.route('/data')
 def get_data():
