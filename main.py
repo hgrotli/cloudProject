@@ -272,6 +272,47 @@ def delete_contact(id):
     del CONTACTS[int(id)]
     return  {'id': id}
 
+@app.route('/contacts/export')
+def export_contacts():
+    try:
+        # retrieve all contacts from the MongoDB collection
+        contacts = list(mycol.find())
+
+        # initialize an empty list to store the vCard data
+        vcard_data = []
+
+        # iterate over each contact and convert it to vCard format
+        for contact in contacts:
+            # extract the relevant fields from the contact object
+            name = contact['name']
+            address = contact['address']
+            organization = contact.get('company', '')
+            phone = contact.get('phone', '')
+            email = contact.get('email', '')
+
+            # format the contact data as a vCard string
+            vcard_string = f"BEGIN:VCARD\nVERSION:3.0\nFN:{name}\nN:{name};;;;\nORG:{organization}\nADR:;;;;{address}\nTEL:{phone}\nEMAIL:{email}\nEND:VCARD\n"
+
+            # append the vCard string to the list
+            vcard_data.append(vcard_string)
+
+        # join the vCard strings into a single string
+        vcard_file_contents = "\n".join(vcard_data)
+
+        # set the filename for the vCard file
+        filename = "contacts.vcf"
+
+        # return the vCard file as a response with the appropriate headers
+        response = Response(vcard_file_contents, mimetype='text/x-vcard')
+        response.headers.set("Content-Disposition", f"attachment; filename={filename}")
+        print(vcard_file_contents)
+        return response
+    except Exception as e:
+        # log the error
+        print(f"An error occurred: {str(e)}")
+        # return a 500 error response
+        return Response(status=500)
+
 
 # This starts the application (if you run the script instead of launging flask
 # from the command line).
