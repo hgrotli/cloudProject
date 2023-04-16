@@ -1,5 +1,6 @@
 from flask import Flask, request, render_template
 from flask import jsonify
+from flask_cors import CORS
 import vobject
 import json
 from pymongo import MongoClient
@@ -61,7 +62,7 @@ mongodb+srv://vegardstamadsen:zvNcYlvVwuE1ScJv@cluster0.bomsogj.mongodb.net/?ret
 
 
 app = Flask("Api")
-
+CORS(app)
 
 # Simulated database
 CONTACTS =[]
