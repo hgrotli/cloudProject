@@ -8,6 +8,7 @@ import certifi
 from bson import json_util
 from flask import Response
 from bson import json_util
+import os
 
 
 
@@ -281,4 +282,4 @@ if __name__ == '__main__':
     was imported as a module and not as a script. I.e. the code in this if does
     not run if the file is imported as a module.'''
 
-    app.run()
+app.run(debug=True, port=os.getenv("PORT", default=5000))
