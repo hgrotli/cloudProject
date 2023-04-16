@@ -142,6 +142,7 @@ def upload():
             
             result = mycol.insert_one(MyContact)
             MyData.append(str(result.inserted_id))
+            print(MyContact)
 
         return jsonify({'message': MyData}) 
         
@@ -150,6 +151,35 @@ def upload():
         return render_template('upload.html')
         
     
+@app.route('/contacts/vcard')
+def get_contactsVcard():
+    # clear the contacts list
+    contacts = []
+
+    # retrieve all contacts from the MongoDB collection
+    for contact in mycol.find():
+        print(contact)
+        # create a vCard object for the contact
+        vcard = vobject.vCard()
+        
+        if 'fullname' not in contact:
+            print("Error: 'fullname' key not found in contact dictionary")
+
+        # set the vCard properties for the contact
+        vcard.add('fn').value = contact['fullname']
+        vcard.add('n').value = vobject.vcard.Name(family=contact['name'].split()[-1], given=contact['name'].split()[0])
+        vcard.add('email').value = contact['email']
+        vcard.add('tel').value = contact['phone']
+        vcard.add('org').value = contact['company']
+        vcard.add('adr').value = vobject.vcard.Address(street=contact['address'])
+
+        # convert the vCard object to a JSON-serializable format and add it to the list
+        contacts.append(json.loads(vcard.serialize()))
+
+    # return the contacts as a JSON response
+    return jsonify(contacts)
+    
+
 @app.route('/contacts')
 def get_contacts():
     # clear the contacts list
