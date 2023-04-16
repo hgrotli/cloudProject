@@ -6,7 +6,7 @@ from pymongo import MongoClient
 import pymongo
 import certifi
 from bson import json_util
-
+from flask import Response
 from bson import json_util
 
 
@@ -152,32 +152,36 @@ def upload():
         
     
 @app.route('/contacts/vcard')
-def get_contactsVcard():
-    # clear the contacts list
-    contacts = []
+def get_contacts_vcard():
+    try:
+        # retrieve all contacts from the MongoDB collection
+        contacts = list(mycol.find())
 
-    # retrieve all contacts from the MongoDB collection
-    for contact in mycol.find():
-        print(contact)
-        # create a vCard object for the contact
-        vcard = vobject.vCard()
-        
-        if 'fullname' not in contact:
-            print("Error: 'fullname' key not found in contact dictionary")
+        # initialize an empty list to store the vCard data
+        vcard_data = []
 
-        # set the vCard properties for the contact
-        vcard.add('fn').value = contact['fullname']
-        vcard.add('n').value = vobject.vcard.Name(family=contact['name'].split()[-1], given=contact['name'].split()[0])
-        vcard.add('email').value = contact['email']
-        vcard.add('tel').value = contact['phone']
-        vcard.add('org').value = contact['company']
-        vcard.add('adr').value = vobject.vcard.Address(street=contact['address'])
+        # iterate over each contact and convert it to vCard format
+        for contact in contacts:
+            # extract the relevant fields from the contact object
+            name = contact['name']
+            address = contact['address']
+            organization = contact.get('organization', '')
+            phone = contact.get('phone', '')
+            email = contact.get('email', '')
 
-        # convert the vCard object to a JSON-serializable format and add it to the list
-        contacts.append(json.loads(vcard.serialize()))
+            # format the contact data as a vCard string
+            vcard_string = f"BEGIN:VCARD\nVERSION:3.0\nFN:{name}\nN:{name};;;;\nORG:{organization}\nADR:;;;;{address}\nTEL:{phone}\nEMAIL:{email}\nEND:VCARD\n"
 
-    # return the contacts as a JSON response
-    return jsonify(contacts)
+            # append the vCard string to the list
+            vcard_data.append({'vcard': vcard_string})
+
+        # return the vCard data as a JSON response
+        return jsonify(vcard_data)
+    except Exception as e:
+        # log the error
+        print(f"An error occurred: {str(e)}")
+        # return a 500 error response
+        return Response(status=500)
     
 
 @app.route('/contacts')
